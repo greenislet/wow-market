@@ -13,3 +13,52 @@
  *= require_tree .
  *= require_self
  */
+
+/* #myTable tfooter tr td a {
+  color: black;
+}
+
+body {
+  background-color: black;
+} */
+/*
+#main-container {
+  padding: 1%;
+} */
+
+/* #tableContainer {
+  border-style: solid;
+} */
+
+#realms-table tbody tr {
+  cursor: pointer;
+}
+
+#wm-menu {
+  position: fixed;
+  width: 100%;
+  padding-left: 25%;
+  padding-right: 25%;
+}
+
+#wm-content {
+    padding-top: 4%;
+    margin-left: 30%;
+    margin-right: 30%;
+}
+
+.page-link {
+  color: #212529;
+}
+
+.page-item.active .page-link {
+  background-color: #6C757D;
+}
+
+#wm-locales-dropdown {
+  padding-bottom: 3%;
+}
+
+#wm-menu .dropdown {
+  padding-right: 1%;
+}

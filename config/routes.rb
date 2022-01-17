@@ -3,4 +3,9 @@ Rails.application.routes.draw do
 
   # Defines the root path route ("/")
   # root "articles#index"
+  resources :realms, only: [:index, :show]
+  root "home#index"
+
+  get "/data/realms", to: "data#realms"
+  # get "/data/items", to: "data#items"
 end

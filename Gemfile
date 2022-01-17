@@ -70,3 +70,10 @@ group :test do
   gem "selenium-webdriver"
   gem "webdrivers"
 end
+
+gem 'rspec'
+gem 'sinatra'
+gem 'rest-client'
+gem 'colorize'
+gem 'json-schema'
+gem 'concurrent-ruby'
