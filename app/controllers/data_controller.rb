@@ -29,6 +29,7 @@ class DataController < ApplicationController
     column_idx = params[:order]["0"]["column"].to_i
 
     realms = Realm.select(:id, :blizz_id, :slug, :region, :status, :population, :category, :locale, :timezone)
+    realms = realms.where("slug LIKE ?", "%#{params["search"]["value"]}%")
     realms = realms.order(@columns[column_idx] => params[:order]["0"]["dir"].to_sym)
     realms = realms.limit(step).offset(page)
     data = []
