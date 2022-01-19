@@ -40,27 +40,26 @@ namespace :items do
 
     puts "Fetching all items...".ljust($LJUST) if verbosity > 0
     to_store = {}
-    items = blz.items()
-    # puts items.inspect
+    items = blz.items((0..1000), [:fr_FR, :zh_CN])
     to_store = {}
     items.each do |id, locales|
+      locale = locales.keys.first
       to_store[id] = {
-        item_id: locales[:en_US][:id],
-        quality: locales[:en_US][:quality],
-        class_id: locales[:en_US][:class_id],
-        subclass_id: locales[:en_US][:subclass_id],
-        binding: locales[:en_US][:binding],
-        version: locales[:en_US][:version],
-        item_names: [ItemName.new(locale: :en_US, name: locales[:en_US][:name])]
+        item_id: locales[locale][:id],
+        quality: locales[locale][:quality],
+        class_id: locales[locale][:class_id],
+        subclass_id: locales[locale][:subclass_id],
+        binding: locales[locale][:binding],
+        version: locales[locale][:version],
+        item_names: [ItemName.new(locale: locale, name: locales[locale][:name])]
       }
-      locales.select{|k,v|k!=:en_US}.each do |locale, realm_data|
+      locales.select{|k,v|k!=locale}.each do |locale, realm_data|
         to_store[id][:item_names] << ItemName.new(locale: locale, name: realm_data[:name])
       end
     end
 
     print "Storing them in db...".ljust($LJUST) if verbosity > 0
     STDOUT.flush if verbosity > 0
-    # puts to_store.values.inspect
     Item.create(to_store.values)
     puts " done. #{success} requests issued. #{retried} had to be repeated" if verbosity > 0
   end

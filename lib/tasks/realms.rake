@@ -48,7 +48,6 @@ namespace :realms do
     to_store = {}
     realms = blz.realms()
     realms.each do |id, locales|
-      puts "#{id}: #{locales.inspect}"
       to_store[id] = {
           blizz_id: id,
           slug: locales[:en_US][:slug],

@@ -318,25 +318,36 @@ class WoWAPI
 #--------------------------------------------------------------------------------------------------
 
   public
-  def items()
+  def items(range=(1..100000), locales=WowAPI.LOCALES)
     pool = Concurrent::FixedThreadPool.new(100)
     items_datas = Concurrent::Hash.new
 
-    (0..10000).each do |item_id|
+    if locales.size < 1
+      raise ArgumentError.new "locales array is empty"
+    end
+
+    test_locale = locales.shift
+
+    range.each do |item_id|
       pool.post do
-        item_data = item(item_id, :en_US)
+        item_data = item(item_id, test_locale)
         items_datas[item_id] = {}
-        items_datas[item_id][:en_US] = item_data
+        items_datas[item_id][test_locale] = item_data
       end
     end
 
     pool.shutdown
     pool.wait_for_termination
 
+    if locales.empty?
+      return items_datas
+    end
+
     pool = Concurrent::FixedThreadPool.new(100)
     items_datas.each_pair do |item_id, v|
       # WoWAPI.LOCALES.select{|k,v|k!=:en_US}.each do |locale|
-      [:fr_FR].each do |locale|
+      # [:fr_FR, :zn_CN].each do |locale|
+      locales.each do |locale|
         pool.post do
           items_datas[item_id][locale] = {}
           items_datas[item_id][locale][:name] = "none"
