@@ -221,4 +221,19 @@ describe WoWAPI do
       expect{@instance.realms}.not_to raise_error
     end
   end
+
+  context "When user fetch items 0-1000 [fr_FR, zh_CN]" do
+    before :all do
+      TestAuth.returned_auth_result = true
+      TestAuth.returned_status = 200
+      TestAuth.returned_json = '{"access_token":"USQzbTzHBrcvk8hApYcnvFc2sDTiI8awGb"}'
+      TestAuth.last_params = nil
+      @instance = WoWAPI.new(:eu, "test_id", "test_secret", true)
+    end
+
+    it "works" do
+      items = @instance.items((0..1000), [:fr_FR, :zh_CN])
+      puts items.inspect.yellow
+    end
+  end
 end
