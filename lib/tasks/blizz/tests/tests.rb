@@ -54,19 +54,19 @@ describe WoWAPI do
     end
 
     # ARGUMENTS
-    it "throws when one argument is nil" do
+    it "The function throws when one argument is nil" do
       expect { WoWAPI.new(nil, "test_id", "test_secret", true) }.to raise_error(ArgumentError)
       expect { WoWAPI.new(:eu, nil, "test_secret", true) }.to raise_error(ArgumentError)
       expect { WoWAPI.new(:eu, "test_id", nil, true) }.to raise_error(ArgumentError)
     end
 
-    it "throws when one argument is not the good type" do
+    it "The function throws when one argument is not the good type" do
       expect { WoWAPI.new(42, "test_id", "test_secret", true) }.to raise_error(ArgumentError)
       expect { WoWAPI.new(:eu, 42, "test_secret", true) }.to raise_error(ArgumentError)
       expect { WoWAPI.new(:eu, "test_id", 42, true) }.to raise_error(ArgumentError)
     end
 
-    it "throws when one of the string argument is not empty" do
+    it "The function throws when one of the string argument is not empty" do
       expect { WoWAPI.new(:eu, "", "test_secret", true) }.to raise_error(ArgumentError)
       expect { WoWAPI.new(:eu, "test_id", "", true) }.to raise_error(ArgumentError)
     end
@@ -74,64 +74,64 @@ describe WoWAPI do
     # add test to check if region is correct (is in region array)
 
     # AUTHENTICATION
-    it "throws when the distant host denies the authentication" do
+    it "The function throws when the distant host denies the authentication" do
       TestAuth.returned_auth_result = false
       expect { WoWAPI.new(:eu, "test_id", "test_secret", true) }.to raise_error(WoWAPI::BadCredentialsError)
     end
 
-    it "throws when the distant host returns \"Unauthorized\"" do
+    it "The function throws when the distant host returns \"Unauthorized\"" do
       TestAuth.returned_auth_result = true
       TestAuth.returned_status = 403
       expect { WoWAPI.new(:eu, "test_id", "test_secret", true) }.to raise_error(WoWAPI::BadCredentialsError)
     end
 
     # JSON
-    it "throws when the received JSON is empty" do
+    it "The function throws when the received JSON is empty" do
       TestAuth.returned_json = ''
       expect { WoWAPI.new(:eu, "test_id", "test_secret", true) }.to raise_error(WoWAPI::UnexpectedJSONError)
     end
 
-    it "throws when the received JSON is invalid" do
+    it "The function throws when the received JSON is invalid" do
       TestAuth.returned_json = '{'
       expect { WoWAPI.new(:eu, "test_id", "test_secret", true) }.to raise_error(WoWAPI::UnexpectedJSONError)
     end
 
-    it "throws when the received JSON is not a hash" do
+    it "The function throws when the received JSON is not a hash" do
       TestAuth.returned_json = '[]'
       expect { WoWAPI.new(:eu, "test_id", "test_secret", true) }.to raise_error(WoWAPI::UnexpectedJSONError)
     end
 
-    it "throws when the received JSON does not contain access token" do
+    it "The function throws when the received JSON does not contain access token" do
       TestAuth.returned_json = '{}'
       expect { WoWAPI.new(:eu, "test_id", "test_secret", true) }.to raise_error(WoWAPI::UnexpectedJSONError)
     end
 
-    it "throws when the received token is not a string" do
+    it "The function throws when the received token is not a string" do
       TestAuth.returned_json = '{"access_token":42}'
       expect { WoWAPI.new(:eu, "test_id", "test_secret", true) }.to raise_error(WoWAPI::UnexpectedJSONError)
     end
 
-    it "throws when the received token is an empty string" do
+    it "The function throws when the received token is an empty string" do
       TestAuth.returned_json = '{"access_token":""}'
       expect { WoWAPI.new(:eu, "test_id", "test_secret", true) }.to raise_error(WoWAPI::UnexpectedJSONError)
     end
 
     #
-    it "does no throw when the distant host accepts the authentication and the returned JSON is valid" do
+    it "The function does not throw when the distant host accepts the authentication and the returned JSON is valid" do
       expect { WoWAPI.new(:eu, "test_id", "test_secret", true) }.not_to raise_error
     end
 
-    it "it returns a WoWAPI class" do
+    it "The function returns a WoWAPI class" do
       expect(WoWAPI.new(:eu, "test_id", "test_secret", true)).to be_kind_of(WoWAPI)
     end
 
-    it "the server gets the expected id/secret" do
+    it "The server gets the expected id/secret" do
       WoWAPI.new(:eu, "test_id", "test_secret", true)
       expect(TestAuth.received_id).to eq("test_id")
       expect(TestAuth.received_secret).to eq("test_secret")
     end
 
-    it "params contains grant_type key" do
+    it "Params contains grant_type key" do
       WoWAPI.new(:eu, "test_id", "test_secret", true)
       expect(TestAuth.last_params).to have_key(:grant_type)
     end
@@ -142,7 +142,7 @@ describe WoWAPI do
     end
   end
 
-  context "When user fetch realm list through realms() method" do
+  context "When user fetch realm list through realms() function" do
     before :all do
       TestAuth.returned_auth_result = true
       TestAuth.returned_status = 200
@@ -151,7 +151,7 @@ describe WoWAPI do
       @instance = WoWAPI.new(:eu, "test_id", "test_secret", true)
     end
 
-    it "works" do
+    it "The function does not throw" do
       TestAPI.realm_index_returned_json = '{'\
               '"_links": {'\
                 '"self": {'\
@@ -233,7 +233,7 @@ describe WoWAPI do
       @instance = WoWAPI.new(:eu, "test_id", "test_secret", true)
     end
 
-    it "does not throw" do
+    it "Item() function does not throw" do
       TestAPI.item_returned_json = -> (id, locale) {
         return '{'\
           '"id": 0,'\
@@ -250,9 +250,15 @@ describe WoWAPI do
           '"_links": {"self": {"href": "http://pl.op"}}}'
         '}'\
       }
-
-      item = ""
       expect {item = @instance.item(0, :en_US)}.not_to raise_error
+    end
+
+    it "Item() function does not make item url callback called more than once when used on one item and one locale" do
+      TestAPI.nb_reqs = 0
+      TestAPI.item_called = 0
+      @instance.item(0, :en_US)
+      expect(TestAPI.nb_reqs).to eq 1
+      expect(TestAPI.item_called).to eq 1
     end
 
     # it "does not throw" do
