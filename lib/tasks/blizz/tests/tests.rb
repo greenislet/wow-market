@@ -1,4 +1,5 @@
 require "rspec"
+require "colorize"
 
 require "../wow-api.rb"
 
@@ -222,18 +223,57 @@ describe WoWAPI do
     end
   end
 
-  context "When user fetch items 0-1000 [fr_FR, zh_CN]" do
+  context "When using item API" do
     before :all do
       TestAuth.returned_auth_result = true
       TestAuth.returned_status = 200
       TestAuth.returned_json = '{"access_token":"USQzbTzHBrcvk8hApYcnvFc2sDTiI8awGb"}'
       TestAuth.last_params = nil
+      TestAPI.nb_reqs = 0
       @instance = WoWAPI.new(:eu, "test_id", "test_secret", true)
     end
 
-    it "works" do
-      items = @instance.items((0..1000), [:fr_FR, :zh_CN])
-      puts items.inspect.yellow
+    it "does not throw" do
+      TestAPI.item_returned_json = -> (id, locale) {
+        return '{'\
+          '"id": 0,'\
+          '"name": "Test Item",'\
+          '"quality": {'\
+            '"type": "LEGENDARY"'\
+          '},'\
+          '"item_class": {'\
+            '"id": 0'\
+          '},'\
+          '"item_subclass": {'\
+            '"id": 0'\
+          '},'\
+          '"_links": {"self": {"href": "http://pl.op"}}}'
+        '}'\
+      }
+
+      item = ""
+      expect {item = @instance.item(0, :en_US)}.not_to raise_error
     end
+
+    # it "does not throw" do
+    #   TestAPI.item_returned_json = -> (id, locale) {
+    #     return '{"id": 0,'\
+    #     '"name": "Test Item",'\
+    #     '"quality": {'\
+    #       '"type": "LEGENDARY"'\
+    #     '},'\
+    #     '"item_class": {'\
+    #       '"id": 0'\
+    #     '},'\
+    #     '"item_subclass": {'\
+    #       '"id": 0'\
+    #     '}}'\
+    #   }
+    #
+    #   items = ""
+    #   expect {items = @instance.items((0..1), [:en_US])}.not_to raise_error
+    #   expect(TestAPI.nb_reqs).to eq 1
+    #   puts items.inspect.yellow
+    # end
   end
 end
