@@ -247,7 +247,7 @@ describe WoWAPI do
           '"item_subclass": {'\
             '"id": 0'\
           '},'\
-          '"_links": {"self": {"href": "http://pl.op"}}}'
+          '"_links": {"self": {"href": "https://localhost/?namespace=static-9.1.5_40764-us"}}}'
         '}'\
       }
       expect {item = @instance.item(0, :en_US)}.not_to raise_error
@@ -259,6 +259,35 @@ describe WoWAPI do
       @instance.item(0, :en_US)
       expect(TestAPI.nb_reqs).to eq 1
       expect(TestAPI.item_called).to eq 1
+    end
+
+    it "Item() function returns a hash containing requested data" do
+      item = @instance.item(0, :en_US)
+      expect(item).to be_kind_of(Hash)
+
+      expect(item.has_key?(:id)).to eq(true)
+      expect(item[:id]).to be_kind_of(Integer)
+      expect(item[:id]).to eq(0)
+
+      expect(item.has_key?(:name)).to eq(true)
+      expect(item[:name]).to be_kind_of(String)
+      expect(item[:name]).to eq("Test Item")
+
+      expect(item.has_key?(:quality)).to eq(true)
+      expect(item[:quality]).to be_kind_of(String)
+      expect(item[:quality]).to eq("LEGENDARY")
+
+      expect(item.has_key?(:class_id)).to eq(true)
+      expect(item[:class_id]).to be_kind_of(Integer)
+      expect(item[:class_id]).to eq(0)
+
+      expect(item.has_key?(:subclass_id)).to eq(true)
+      expect(item[:subclass_id]).to be_kind_of(Integer)
+      expect(item[:subclass_id]).to eq(0)
+
+      expect(item.has_key?(:version)).to eq(true)
+      expect(item[:version]).to be_kind_of(String)
+      expect(item[:version]).to eq("9.1.5_40764")
     end
 
     # it "does not throw" do
