@@ -231,9 +231,6 @@ describe WoWAPI do
       TestAuth.last_params = nil
       TestAPI.nb_reqs = 0
       @instance = WoWAPI.new(:eu, "test_id", "test_secret", true)
-    end
-
-    it "Item() function does not throw" do
       TestAPI.item_returned_json = -> (id, locale) {
         return '{'\
           '"id": 0,'\
@@ -250,6 +247,17 @@ describe WoWAPI do
           '"_links": {"self": {"href": "https://localhost/?namespace=static-9.1.5_40764-us"}}}'
         '}'\
       }
+    end
+
+    it "Item() throws on bad arguments" do
+      expect{@instance.item(nil, :en_US)}.to raise_error(ArgumentError)
+      expect{@instance.item(0, nil)}.to raise_error(ArgumentError)
+      expect{@instance.item("", :en_US)}.to raise_error(ArgumentError)
+      expect{@instance.item(0, "")}.to raise_error(ArgumentError)
+      expect{@instance.item(0, :abc)}.to raise_error(ArgumentError)
+    end
+
+    it "Item() function does not throw" do
       expect {item = @instance.item(0, :en_US)}.not_to raise_error
     end
 
@@ -290,25 +298,5 @@ describe WoWAPI do
       expect(item[:version]).to eq("9.1.5_40764")
     end
 
-    # it "does not throw" do
-    #   TestAPI.item_returned_json = -> (id, locale) {
-    #     return '{"id": 0,'\
-    #     '"name": "Test Item",'\
-    #     '"quality": {'\
-    #       '"type": "LEGENDARY"'\
-    #     '},'\
-    #     '"item_class": {'\
-    #       '"id": 0'\
-    #     '},'\
-    #     '"item_subclass": {'\
-    #       '"id": 0'\
-    #     '}}'\
-    #   }
-    #
-    #   items = ""
-    #   expect {items = @instance.items((0..1), [:en_US])}.not_to raise_error
-    #   expect(TestAPI.nb_reqs).to eq 1
-    #   puts items.inspect.yellow
-    # end
   end
 end

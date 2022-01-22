@@ -291,6 +291,13 @@ class WoWAPI
 
   public
   def item(item_id, locale)
+    if item_id.nil? || locale.nil?
+      raise ArgumentError.new("item(): at least one argument is nil")
+    elsif !item_id.is_a?(Integer) || !locale.is_a?(Symbol)
+      raise ArgumentError.new("item(): at least one argument has not the proper type")
+    elsif !WoWAPI.LOCALES.include?(locale)
+      raise ArgumentError.new("item(): locale \"#{locale.to_s}\" not handled")
+    end
     timestamp = Time.now
     item = get(@region, :item, locale, @region, item_id)
     elapsed = Time.now - timestamp
@@ -319,6 +326,19 @@ class WoWAPI
 
   public
   def items(range=(1..100000), locales=WowAPI.LOCALES)
+    if range.nil? || locales.nil?
+      raise ArgumentError.new("items(): at least one argument is nil")
+    elsif !range.is_a?(Range) || !locales.is_a?(Array)
+      raise ArgumentError.new("items(): at least one argument has not the good type")
+    elsif locales.empty?
+      raise ArgumentError.new("items(): locales array is empty")
+    else
+      locales.each do |locale|
+        if !WoWAPI.LOCALES.contains?(locale)
+          raise ArgumentError.new("locale \"#{locale.to_s}\" is not handled")
+        end
+      end
+    end
     pool = Concurrent::FixedThreadPool.new(100)
     items_datas = Concurrent::Hash.new
 
