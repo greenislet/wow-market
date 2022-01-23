@@ -50,7 +50,7 @@ class DataController < ApplicationController
     end
     resp["ids"] = ids
     resp["data"] = data
-    resp["recordsTotal"] = Realm.count
+    resp["recordsTotal"] = data.count
     resp["recordsFiltered"] = Realm.count
     render plain: JSON.generate(resp)
   end
