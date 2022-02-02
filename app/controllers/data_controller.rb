@@ -29,7 +29,12 @@ class DataController < ApplicationController
     column_idx = params[:order]["0"]["column"].to_i
 
     realms = Realm.select(:id, :blizz_id, :slug, :region, :status, :population, :category, :locale, :timezone)
-    realms = realms.where("slug LIKE ?", "%#{params["search"]["value"]}%")
+    if !params["search"]["value"].empty?
+      realms = realms.where("slug LIKE ?", "%#{params["search"]["value"]}%")
+      recordsFiltered = realms.to_a.count
+    else
+      recordsFiltered = Realm.count
+    end
     realms = realms.order(@columns[column_idx] => params[:order]["0"]["dir"].to_sym)
     realms = realms.limit(step).offset(page)
     data = []
@@ -50,8 +55,8 @@ class DataController < ApplicationController
     end
     resp["ids"] = ids
     resp["data"] = data
-    resp["recordsTotal"] = data.count
-    resp["recordsFiltered"] = Realm.count
+    resp["recordsTotal"] = Realm.count
+    resp["recordsFiltered"] = recordsFiltered
     render plain: JSON.generate(resp)
   end
 end

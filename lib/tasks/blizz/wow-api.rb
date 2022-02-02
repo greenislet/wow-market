@@ -334,7 +334,7 @@ class WoWAPI
       raise ArgumentError.new("items(): locales array is empty")
     else
       locales.each do |locale|
-        if !WoWAPI.LOCALES.contains?(locale)
+        if !WoWAPI.LOCALES.include?(locale)
           raise ArgumentError.new("locale \"#{locale.to_s}\" is not handled")
         end
       end

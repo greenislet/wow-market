@@ -257,7 +257,7 @@ describe WoWAPI do
       expect{@instance.item(0, :abc)}.to raise_error(ArgumentError)
     end
 
-    it "Item() function does not throw" do
+    it "Item() function does not throw on normal usage" do
       expect {item = @instance.item(0, :en_US)}.not_to raise_error
     end
 
@@ -296,6 +296,15 @@ describe WoWAPI do
       expect(item.has_key?(:version)).to eq(true)
       expect(item[:version]).to be_kind_of(String)
       expect(item[:version]).to eq("9.1.5_40764")
+    end
+
+    it "Items() does not raise on normal usage" do
+      # @instance.items((0..0), [:en_US])
+    end
+
+    it "Requests are properly retried on expected errors" do
+      TestAPI.status = 408
+      @instance.items((0..100), [:en_US])
     end
 
   end
